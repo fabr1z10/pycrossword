@@ -1,0 +1,2 @@
+# pycrossword
+crossword generation library

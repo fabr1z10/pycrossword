@@ -9,7 +9,7 @@ you can import the library by using
 
 You can create an empty grid by instatiating one grid class as in the following snippet:
 
-	grid = cw.Grid(13, 13, [4, 0, 5, 1, 11, 1, 2, 2, 10, 2, 9, 3, 0, 4, 8, 4, 1, 5, 7, 5, 6, 6, 5, 7, 11, 7, 4, 8, 12, 8, 3, 9, 2, 10, 10, 10, 1, 11, 7, 11, 8, 12])
+	grid = cw.Grid(6, 6, [1, 4, 2, 3, 3, 2, 4, 1])
 
 The Grid class takes in 3 arguments:
 

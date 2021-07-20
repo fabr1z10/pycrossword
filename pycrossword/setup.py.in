@@ -1,0 +1,10 @@
+from distutils.core import setup
+
+setup (name = 'pycrossword',
+       version = '@VERSION@',
+       author = "Nobody",
+       description = """Install precompiled extension""",
+       py_modules = ["pycrossword"],
+       packages=[''],
+       package_data={'': ['pycrossword*.so']},
+       )

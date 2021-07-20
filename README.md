@@ -17,5 +17,15 @@ The Grid class takes in 3 arguments:
 - the height of the grid;
 - the list of black cells, each one identified by a pair of integers indicating its row and column.
 
+A dictionary is simply a CSV file containing a list of clues. Each line of the file must be of this form:
 
+	word,clue
+
+Of course the same word might have multiple cues, in this case each cue must go on his own line. The dictionary is created by calling
+
+	dict = cw.Dict(<path to dict file>)
+
+Once you have a grid and a dictionary, you can simply generate a crossword by calling
+
+	cw.make
 

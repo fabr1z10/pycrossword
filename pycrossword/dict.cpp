@@ -10,37 +10,37 @@
 namespace py = pybind11;
 
 
-Dict::Dict(const std::string& directory, int maxLen) : m_wordCount(0), m_maxLength(maxLen) {
+Dict::Dict(const std::string& filename, int maxLen) : m_wordCount(0), m_defCount(0), m_maxLength(maxLen) {
     for (int n = 2; n <= m_maxLength; ++n) {
         m_ndicts.push_back(NDict(n));
     }
 
-    std::stringstream mdir;
-    mdir << directory;
-    if (directory.back() != '/')
-        mdir << "/";
-    mdir << "words/";
-    for (char c = 'a'; c <= 'z'; ++c) {
-        std::stringstream ss;
-        ss << mdir.str() << c << ".txt";
-        std::ifstream file(ss.str().c_str());
-        //py::print(" # opening " + ss.str());
-        if (!file.good()) {
-            throw CrossWordException("Cannot open " + ss.str());
-        }
-        std::string line;
-        while (std::getline(file, line)) {
-            addWord(line);
-        }
+	std::ifstream file(filename.c_str());
+    std::string line;
+    while (std::getline(file, line)) {
+		size_t commaPos = line.find(',');
+		if (commaPos == std::string::npos) {
+			throw CrossWordException("Error parsing: " + line);
+		}
+		m_defCount += addWord(line.substr(0, commaPos));
     }
+
+    for (const auto& n : m_ndicts) {
+    	m_wordCount += n.getSize();
+    }
+
+    py::print("Loaded " + std::to_string(m_wordCount) + " words and " + std::to_string(m_defCount) + " definitions.");
+
 }
 
-void Dict::addWord(const std::string &word) {
-    m_wordCount++;
+int Dict::addWord(const std::string &word) {
+    //    m_wordCount++;
     auto l = word.length();
     if (l <= m_maxLength && l > 1) {
         m_ndicts[l - 2].addWord(word);
+        return 1;
     }
+    return 0;
 }
 
 int Dict::getNWords(const std::string& pattern) const {

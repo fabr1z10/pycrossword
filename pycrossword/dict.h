@@ -11,9 +11,9 @@ public:
     int getNWords(const std::string& pattern) const;
     std::vector<std::string> getWords(const std::string& pattern) const;
 private:
-    void addWord(const std::string& word);
+    int addWord(const std::string& word);
     int m_wordCount;
-
+	int m_defCount;
     // the maximum length allowed for a word
     int m_maxLength;
     mutable std::unordered_map<std::string, int> m_cache;

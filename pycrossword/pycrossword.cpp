@@ -7,16 +7,11 @@
 
 namespace py = pybind11;
 
-int main(int argc, char **argv) {
-    py::print("FOTTIMI");
-}
-
-
 PYBIND11_MODULE(pycrossword, m) {
     m.doc() = "pycrossword plugin"; // optional module docstring
 
     py::class_<Dict>(m, "Dict")
-            .def(py::init<const std::string&>())
+            .def(py::init<const std::string&, int>())
             .def_property_readonly("word_count", &Dict::getWordCount)
             .def("get_words", &Dict::getWords)
             .def("get_wc", &Dict::getNWords);

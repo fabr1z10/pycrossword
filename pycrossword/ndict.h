@@ -86,7 +86,12 @@ public:
     std::unique_ptr<ICollection> getWords(const std::string&) const;
     int getNWords(const std::string& pattern) const;
     bool patternMatch (const std::string pattern, const std::string word, int from ,int to) const;
+    int getSize() const;
 private:
     int m_size;
     std::vector <std::set<std::string, Compare>> m_sets;
 };
+
+inline int NDict::getSize() const {
+	return m_sets[0].size();
+}

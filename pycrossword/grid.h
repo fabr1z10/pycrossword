@@ -19,6 +19,9 @@ public:
     bool isBlack(int x, int y) const;
     const Definition* getAcrossDefAt(int row, int col) const;
     const Definition* getDownDefAt(int row, int col) const;
+    std::vector<std::string> getDefsAt(int, int) const;
+    std::unordered_map<int, Definition>& getAcross();
+    std::unordered_map<int, Definition>& getDown();
 private:
     char getChar(int row, int col) const;
     void setupDefinitions();
@@ -54,5 +57,13 @@ inline std::string Grid::getChars() const {
 }
 
 inline bool Grid::isBlack(int x, int y) const {
+    if (x < 0 || y < 0 || x >= m_width || y >= m_height) return true;
     return m_chars[y * m_width + x] == BLACK;
+}
+
+inline std::unordered_map<int, Definition>& Grid::getAcross() {
+    return across;
+}
+inline std::unordered_map<int, Definition>& Grid::getDown() {
+    return down;
 }

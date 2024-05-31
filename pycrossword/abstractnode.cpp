@@ -63,6 +63,20 @@ char AbstractNode::getChar(int row, int col) const {
     return m_solution[row * m_width + col];
 }
 
+std::string AbstractNode::getAcrossWord(int x, int y, int length) const {
+    return m_solution.substr(y * m_width + x, length);
+}
+
+std::string AbstractNode::getDownWord(int x, int y, int length) const {
+    std::stringstream stream;
+    for (int i = 0; i < length; ++i) {
+        stream << m_solution[(y+i)*m_width + x];
+    }
+    return stream.str();
+}
+
+
+std::string getDownWord(int x, int y, int length);
 void AbstractNode::updateData(int rowStart, int h, int colStart, int w) {
     for (int i = 0; i < h; ++i) {
         for (int j = 0; j < w; ++j) {

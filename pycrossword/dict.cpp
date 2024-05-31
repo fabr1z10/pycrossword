@@ -11,6 +11,10 @@ namespace py = pybind11;
 
 
 Dict::Dict(const std::string& filename, int maxLen) : m_wordCount(0), m_defCount(0), m_maxLength(maxLen) {
+    // Seed with a real random value, if available
+    std::random_device rd;
+    _generator = std::make_unique<std::mt19937>(rd());
+
     for (int n = 2; n <= m_maxLength; ++n) {
         m_ndicts.push_back(NDict(n));
     }
@@ -22,7 +26,10 @@ Dict::Dict(const std::string& filename, int maxLen) : m_wordCount(0), m_defCount
 		if (commaPos == std::string::npos) {
 			throw CrossWordException("Error parsing: " + line);
 		}
-		m_defCount += addWord(line.substr(0, commaPos));
+		auto word = line.substr(0, commaPos);
+		auto def = line.substr(commaPos+1);
+		m_defCount += addWord(word);
+		_definitions[word].push_back(def);
     }
 
     for (const auto& n : m_ndicts) {
@@ -66,4 +73,16 @@ std::vector<std::string> Dict::getWords(const std::string& pattern) const {
         return n->toVec();
     }
     return std::vector<std::string>();
+}
+
+std::string Dict::getDefinition(const std::string &word) const {
+    auto it = _definitions.find(word);
+    if (it == _definitions.end()) {
+        return "---";
+    }
+    auto defs = it->second;
+    std::uniform_int_distribution<> dist(0, defs.size()-1);
+    return defs[dist(*_generator.get())];
+
+
 }

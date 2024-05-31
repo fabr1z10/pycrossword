@@ -5,7 +5,7 @@ Grid::Grid(int width, int height, const std::vector<int>& black) : m_width(width
 
     m_chars = std::string(m_size, WHITE);
     for (auto i = 0 ; i < black.size(); i += 2) {
-        m_chars[black[i] * m_width + black[i+1]] = BLACK;
+        m_chars[black[i] + black[i+1] * m_width] = BLACK;
     }
     setupDefinitions();
     computeNeighboers();
@@ -111,3 +111,4 @@ const Definition* Grid::getDownDefAt(int row, int col) const {
     int v = m_vertical[row * m_width + col];
     return v == -1 ? nullptr : &down.at(v);
 }
+

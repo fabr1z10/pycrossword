@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.3)
 
 project(pycrossword)
 
+find_package(Python COMPONENTS Interpreter Development)
+
 include_directories(${PYBIND_INCLUDE_DIR})
 
 pybind11_add_module(pycrossword params.cpp pycrossword.cpp rand.cpp decision.cpp ndict.cpp dict.cpp grid.cpp definition.cpp
@@ -17,6 +19,6 @@ configure_file(
         "${CMAKE_CURRENT_BINARY_DIR}/install.sh"
 )
 
-install(TARGETS pycrossword DESTINATION ${BIN_DIR})
+install(TARGETS pycrossword COMPONENT python LIBRARY DESTINATION ${Python_SITEARCH})
 
-install(CODE "execute_process(COMMAND ${CMAKE_CURRENT_BINARY_DIR}/install.sh)")
+#install(CODE "execute_process(COMMAND ${CMAKE_CURRENT_BINARY_DIR}/install.sh)")

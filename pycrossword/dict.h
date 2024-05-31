@@ -2,6 +2,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <random>
 #include "ndict.h"
 
 class Dict {
@@ -10,6 +11,7 @@ public:
     int getWordCount() const;
     int getNWords(const std::string& pattern) const;
     std::vector<std::string> getWords(const std::string& pattern) const;
+    std::string getDefinition(const std::string& word) const;
 private:
     int addWord(const std::string& word);
     int m_wordCount;
@@ -18,6 +20,8 @@ private:
     int m_maxLength;
     mutable std::unordered_map<std::string, int> m_cache;
     std::vector<NDict> m_ndicts;
+    std::unordered_map<std::string, std::vector<std::string>> _definitions;
+    std::unique_ptr<std::mt19937> _generator;
 };
 
 inline int Dict::getWordCount() const {

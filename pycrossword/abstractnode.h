@@ -41,6 +41,8 @@ public:
     std::string toString() const;
     int getDepth() const;
     int getId() const;
+    std::string getAcrossWord(int x, int y, int length) const;
+    std::string getDownWord(int x, int y, int length) const;
 protected:
     int m_id;
     static int g_id;

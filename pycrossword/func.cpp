@@ -8,7 +8,7 @@
 
 namespace py = pybind11;
 
-void makeCrossword(const Dict& dict, const Grid& grid) {
+int makeCrossword(const Dict& dict, Grid& grid) {
 
     int result=0;
     int attempt = 0;
@@ -21,8 +21,26 @@ void makeCrossword(const Dict& dict, const Grid& grid) {
         if (result == 0) {
             // success
             py::print(algo->getResultNode()->toString());
-            return;
+            for (auto& m : grid.getAcross()) {
+                auto word = algo->getResultNode()->getAcrossWord(m.second.icol, m.second.irow, m.second.length);
+                py::print("--- ", word);
+                auto clue = dict.getDefinition(word);
+                m.second.word = word;
+                m.second.clue = clue;
+                py::print(m.first, " orizzontale: ", word, clue);
+            }
+            for (auto& m : grid.getDown()) {
+                auto word = algo->getResultNode()->getDownWord(m.second.icol, m.second.irow, m.second.length);
+                py::print("--- ", word);
+
+                auto clue = dict.getDefinition(word);
+                m.second.word = word;
+                m.second.clue = clue;
+                py::print(m.first, " verticale: ", word, clue);
+            }
+            return 0;
         }
     } while (result != 0 && attempt < maxAttempts);
-    py::print("unable to find solution.");
+    //py::print("unable to find solution.");
+    return 1;
 }

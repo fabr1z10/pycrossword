@@ -3,4 +3,4 @@
 #include "dict.h"
 #include "grid.h"
 
-void makeCrossword(const Dict&, const Grid& grid);
+int makeCrossword(const Dict&, Grid& grid);

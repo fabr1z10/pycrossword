@@ -1,3 +1,16 @@
+variables:
+  NoModifier:     &NoModifier      0x00000000
+  ShiftModifier:  &ShiftModifier   0x02000000
+  CtrlModifier:   &CtrlModifier    0x04000000
+  AltModifier:    &AltModifier     0x08000000
+  Key_Left:       &Key_Left        0x01000012
+  Key_Right:      &Key_Right       0x01000014
+  Key_Up:         &Key_Up          0x01000013
+  Key_Down:       &Key_Down        0x01000015
+  Key_Backslash:  &Key_Backslash   0x5c
+  Key_Bar:        &Key_Bar         0x7c
+  Key_1:          &Key_1           0x31
+  Key_2:          &Key_2           0x32
 tokens: # these are the BASIC v2.0 76 tokens
   END: 128
   FOR: 129
@@ -75,6 +88,46 @@ tokens: # these are the BASIC v2.0 76 tokens
   RIGHT$: 201
   MID$: 202
   GO: 203
-ord:
-  57971: 147            # {clear} / {clr}
-  61136: 144            # {blk} / {black}
+special_chars:
+  # {cursor left}/{crsr left} alt + left
+  - mod: *AltModifier
+    key: *Key_Left
+    char: 57954
+    code: 157
+  # {cursor right}/{crsr right}  (alt+right)
+  - mod: *AltModifier
+    key: *Key_Right
+    char: 57949
+    code: 29
+  # {cursor up}/{crsr up} (alt+up)
+  - mod: *AltModifier
+    key: *Key_Up
+    char: 57969
+    code: 145
+  # {cursor down}/{crsr down} (alt+down)
+  - mod: *AltModifier
+    key: *Key_Down
+    char: 57937
+    code: 17
+  # {home} (backslash)
+  - mod: *NoModifier
+    key: *Key_Backslash
+    char: 57939
+    code: 19
+  # {clear} / {clr} (bar)
+  - mod: *ShiftModifier
+    key: *Key_Bar
+    char: 57971
+    code: 147
+  # {blk} / {black} ctrl+0
+  - mod: *CtrlModifier
+    key: *Key_1
+    char: 61136
+    code: 144
+  # {wht} / {white} ctrl+1
+  - mod: *CtrlModifier
+    key: *Key_2
+    char: 57925
+    code: 5
+
+

@@ -1,3 +1,4 @@
+from PySide6.QtCore import Qt
 import yaml
 
 class TokenNode:
@@ -9,17 +10,28 @@ class TokenNode:
         self.children[character] = token
 
 class Tokenizer:
-    def __init__(self, fileName):
+    def __init__(self, fileName, upperCase=False):
         print(' -- tokenizer: ', fileName)
         with open(fileName, 'r') as file:
             self.tokens = yaml.safe_load(file)
         self.tokenRoot = TokenNode()
         self.invTokens = dict()
-        self.invOrd = dict()
+        self.charToCode = dict()
+        self.codeToChar = dict()
+        self.keys = dict()
+        #self.invOrd = dict()
         for token, value in self.tokens['tokens'].items():
             self.invTokens[value] = token
-        for token, value in self.tokens['ord'].items():
-            self.invOrd[value] = token
+        # for token, value in self.tokens['ord'].items():
+        #     self.invOrd[value] = token
+        for sc in self.tokens['special_chars']:
+            self.charToCode[sc['char']] = sc['code']
+            self.codeToChar[sc['code']] = sc['char']
+            self.keys[(sc['mod'], sc['key'])] = sc['char']
+            print(sc)
+        if upperCase:
+            for i in range(Qt.Key_A, Qt.Key_Z+1):
+                self.keys[(Qt.NoModifier.value, i)] = i
         # create tree
         for token, value in self.tokens['tokens'].items():
             node = self.tokenRoot
@@ -73,14 +85,14 @@ class Tokenizer:
                 tokens.pop(0)
             else:
                 print('PROVA',s[i], ord(s[i]))
-                instruction.append(self.tokens['ord'].get(ord(s[i]), ord(s[i])))
+                instruction.append(self.charToCode.get(ord(s[i]), ord(s[i])))
                 i += 1
         return instruction
 
     def readBasicFile(self, file):
         #print(settings.invtoken)
         li = {}
-        print(self.invOrd)
+        #print(self.invOrd)
         with open(file, 'rb') as f:
             address = f.read(2)
             a0 = int.from_bytes(address, 'little')
@@ -105,12 +117,12 @@ class Tokenizer:
                         in_quotes = not in_quotes
                     #used_map = self.invOrd if in_quotes else self.invTokens
                     if in_quotes:
-                        m.append(chr(self.invOrd.get(b, b)))
+                        m.append(chr(self.codeToChar.get(b, b)))
                     else:
                         if b in self.invTokens:
                             m.append(self.invTokens[b])
                         else:
-                            m.append(chr(self.invOrd.get(b, b)))
+                            m.append(chr(self.codeToChar.get(b, b)))
 
                     #m.append(chr(used_map.get(int(b), b)))
                 print(m)

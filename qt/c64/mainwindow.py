@@ -4,77 +4,49 @@ from PySide6.QtWidgets import QMainWindow, QPlainTextEdit, QStatusBar, QLabel, Q
 from tokenizer import Tokenizer
 
 class C64TextEdit(QPlainTextEdit):
-    def __init__(self):
+    def __init__(self, tokenizer):
+        self.tokenizer = tokenizer
         super().__init__()
         self.setWordWrapMode(QTextOption.WrapMode.WrapAnywhere)
         #self.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
         self.modifiers = {
-            Qt.AltModifier: {
-                Qt.Key_Left: 57954,
-                Qt.Key_Right: 57949,
-                Qt.Key_Up: 57969,
-                Qt.Key_Down: 57937
-            },
-            Qt.ShiftModifier: {
-                Qt.Key_Bar: 57971
-            },
+
+
             Qt.ControlModifier: {
-                Qt.Key_1: 61136
+                Qt.Key_1: 61136,
+                Qt.Key_2: 57925
             },
-            Qt.NoModifier: {
-                Qt.Key_Left: 57954,
-                Qt.Key_Right: 57949,
-                Qt.Key_Up: 57969,
-                Qt.Key_Down: 57937,
-                Qt.Key_A: 65,
-                Qt.Key_B: 66,
-                Qt.Key_C: 67,
-                Qt.Key_D: 68,
-                Qt.Key_E: 69,
-                Qt.Key_F: 70,
-                Qt.Key_G: 71,
-                Qt.Key_H: 72,
-                Qt.Key_I: 73,
-                Qt.Key_J: 74,
-                Qt.Key_K: 75,
-                Qt.Key_L: 76,
-                Qt.Key_M: 77,
-                Qt.Key_N: 78,
-                Qt.Key_O: 79,
-                Qt.Key_P: 80,
-                Qt.Key_Q: 81,
-                Qt.Key_R: 82,
-                Qt.Key_S: 83,
-                Qt.Key_T: 84,
-                Qt.Key_U: 85,
-                Qt.Key_V: 86,
-                Qt.Key_W: 87,
-                Qt.Key_X: 88,
-                Qt.Key_Y: 89,
-                Qt.Key_Z: 90,
-                Qt.Key_Backslash: 57939,
-                Qt.Key_Bar: 57971
-            },
+
 
 
         }
 
     def keyPressEvent(self, e):
+
+
         print(e.key(), e.modifiers(), e.modifiers() in self.modifiers)
-        if e.modifiers() in self.modifiers and e.key() in self.modifiers[e.modifiers()]:
-            key = self.modifiers[e.modifiers()][e.key()]
-            print('fottimi',key)
-            a = QKeyEvent(e.type(), key, Qt.NoModifier, text=chr(key))
+        #print(self.tokenizer.keys, e.modifiers(), e.modifiers().value, e.key())
+        if (e.modifiers().value, e.key()) in self.tokenizer.keys:
+            print('key found')
+            val = self.tokenizer.keys[(e.modifiers().value, e.key())]
+            a = QKeyEvent(e.type(), val, Qt.NoModifier, text=chr(val))
             super().keyPressEvent(a)
         else:
             super().keyPressEvent(e)
+        # if e.modifiers() in self.modifiers and e.key() in self.modifiers[e.modifiers()]:
+        #     key = self.modifiers[e.modifiers()][e.key()]
+        #     print('fottimi',key)
+        #     a = QKeyEvent(e.type(), key, Qt.NoModifier, text=chr(key))
+        #     super().keyPressEvent(a)
+        # else:
+
 
 class MainWindow(QMainWindow):
     
     def __init__(self, app):
         super().__init__()
         self.appName = 'RetroStudio'
-        self.tokenizer = Tokenizer('token.yaml')
+        self.tokenizer = Tokenizer('token.yaml', upperCase=True)
         self.app = app  # used to quit the app
         self.file = ''
         self.setWindowTitle(self.appName)
@@ -116,7 +88,7 @@ class MainWindow(QMainWindow):
         sb.addPermanentWidget(self.dictLabel)
         sb.addWidget(self.gridStatusLabel)
 
-        self.main = C64TextEdit()
+        self.main = C64TextEdit(self.tokenizer)
         self.main.setFont(custom_font)
 
         self.setCentralWidget(self.main)

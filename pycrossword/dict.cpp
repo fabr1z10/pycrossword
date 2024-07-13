@@ -22,6 +22,8 @@ Dict::Dict(const std::string& filename, int maxLen) : m_wordCount(0), m_defCount
 	std::ifstream file(filename.c_str());
     std::string line;
     while (std::getline(file, line)) {
+        if (line.empty())
+            break;
 		size_t commaPos = line.find(',');
 		if (commaPos == std::string::npos) {
 			throw CrossWordException("Error parsing: " + line);

@@ -1,0 +1,52 @@
+variables:
+  NoModifier:     &NoModifier      0x00000000
+  ShiftModifier:  &ShiftModifier   0x02000000
+  CtrlModifier:   &CtrlModifier    0x04000000
+  AltModifier:    &AltModifier     0x08000000
+  Key_Left:       &Key_Left        0x01000012
+  Key_Right:      &Key_Right       0x01000014
+  Key_Up:         &Key_Up          0x01000013
+  Key_Down:       &Key_Down        0x01000015
+  Key_Backslash:  &Key_Backslash   0x5c
+  Key_Bar:        &Key_Bar         0x7c
+  Key_0:          &Key_0           0x30
+  Key_1:          &Key_1           0x31
+  Key_2:          &Key_2           0x32
+  Key_3:          &Key_3           0x33
+  Key_4:          &Key_4           0x34
+  Key_5:          &Key_5           0x35
+  Key_6:          &Key_6           0x36
+  Key_7:          &Key_7           0x37
+  Key_8:          &Key_8           0x38
+  Key_9:          &Key_9           0x39
+  Key_A:          &Key_A           0x41
+  Key_B:          &Key_B           0x42
+  Key_C:          &Key_C           0x43
+  Key_D:          &Key_D           0x44
+  Key_E:          &Key_E           0x45
+  Key_F:          &Key_F           0x46
+  Key_G:          &Key_G           0x47
+  Key_H:          &Key_H           0x48
+  Key_I:          &Key_I           0x49
+  Key_J:          &Key_J           0x4A
+  Key_K:          &Key_K           0x4B
+  Key_L:          &Key_L           0x4C
+  Key_M:          &Key_M           0x4D
+  Key_N:          &Key_N           0x4E
+  Key_O:          &Key_O           0x4F
+  Key_P:          &Key_P           0x50
+  Key_Q:          &Key_Q           0x51
+  Key_R:          &Key_R           0x52
+  Key_S:          &Key_S           0x53
+  Key_T:          &Key_T           0x54
+  Key_U:          &Key_U           0x55
+  Key_V:          &Key_V           0x56
+  Key_W:          &Key_W           0x57
+  Key_X:          &Key_X           0x58
+  Key_Y:          &Key_Y           0x59
+  Key_Z:          &Key_Z           0x5A
+
+tokens: # these are the BASIC v2.0 76 tokens
+  LET: 0xF1
+
+special_chars: []

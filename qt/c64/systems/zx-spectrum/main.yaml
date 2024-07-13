@@ -1,0 +1,3 @@
+font: 'zx-spectrum.ttf'
+upper_case: False
+class_name: SpeccyTokenizer

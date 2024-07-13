@@ -6,10 +6,11 @@ from gridselect import GridSelect
 from crossword import Crossword
 from conf import Configuration
 from os.path import basename
+import sre_yield
 class GameWindow(QMainWindow):
 
     def loadDictionary(self):
-        # get the current dictionary
+
         self.cw.setDictionary(self.config.dictionary_file)
         self.dictLabel.setText(basename(self.config.dictionary_file) + ' (' + str(self.cw.dict.word_count) + ')' )
         

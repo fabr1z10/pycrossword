@@ -1,0 +1,3 @@
+font: c64.ttf
+upper_case: True
+class_name: C64Tokenizer

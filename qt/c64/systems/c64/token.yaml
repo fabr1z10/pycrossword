@@ -1,0 +1,352 @@
+variables:
+  NoModifier:     &NoModifier      0x00000000
+  ShiftModifier:  &ShiftModifier   0x02000000
+  CtrlModifier:   &CtrlModifier    0x04000000
+  AltModifier:    &AltModifier     0x08000000
+  Key_Left:       &Key_Left        0x01000012
+  Key_Right:      &Key_Right       0x01000014
+  Key_Up:         &Key_Up          0x01000013
+  Key_Down:       &Key_Down        0x01000015
+  Key_Backslash:  &Key_Backslash   0x5c
+  Key_Bar:        &Key_Bar         0x7c
+  Key_0:          &Key_0           0x30
+  Key_1:          &Key_1           0x31
+  Key_2:          &Key_2           0x32
+  Key_3:          &Key_3           0x33
+  Key_4:          &Key_4           0x34
+  Key_5:          &Key_5           0x35
+  Key_6:          &Key_6           0x36
+  Key_7:          &Key_7           0x37
+  Key_8:          &Key_8           0x38
+  Key_9:          &Key_9           0x39
+  Key_A:          &Key_A           0x41
+  Key_B:          &Key_B           0x42
+  Key_C:          &Key_C           0x43
+  Key_D:          &Key_D           0x44
+  Key_E:          &Key_E           0x45
+  Key_F:          &Key_F           0x46
+  Key_G:          &Key_G           0x47
+  Key_H:          &Key_H           0x48
+  Key_I:          &Key_I           0x49
+  Key_J:          &Key_J           0x4A
+  Key_K:          &Key_K           0x4B
+  Key_L:          &Key_L           0x4C
+  Key_M:          &Key_M           0x4D
+  Key_N:          &Key_N           0x4E
+  Key_O:          &Key_O           0x4F
+  Key_P:          &Key_P           0x50
+  Key_Q:          &Key_Q           0x51
+  Key_R:          &Key_R           0x52
+  Key_S:          &Key_S           0x53
+  Key_T:          &Key_T           0x54
+  Key_U:          &Key_U           0x55
+  Key_V:          &Key_V           0x56
+  Key_W:          &Key_W           0x57
+  Key_X:          &Key_X           0x58
+  Key_Y:          &Key_Y           0x59
+  Key_Z:          &Key_Z           0x5A
+
+tokens: # these are the BASIC v2.0 76 tokens
+  END: 128
+  FOR: 129
+  NEXT: 130
+  DATA: 131
+  INPUT#: 132
+  INPUT: 133
+  DIM: 134
+  READ: 135
+  LET: 136
+  GOTO: 137
+  RUN: 138
+  IF: 139
+  RESTORE: 140
+  GOSUB: 141
+  RETURN: 142
+  REM: 143
+  STOP: 144
+  'ON': 145
+  WAIT: 146
+  LOAD: 147
+  SAVE: 148
+  VERIFY: 149
+  DEF: 150
+  POKE: 151
+  'PRINT#': 152         # $98
+  PRINT: 153          # $99
+  CONT: 154
+  LIST: 155
+  CLR: 156
+  CMD: 157
+  SYS: 158
+  OPEN: 159
+  CLOSE: 160
+  GET: 161
+  NEW: 162
+  TAB(: 163
+  TO: 164
+  FN: 165
+  SPC(: 166
+  THEN: 167
+  NOT: 168
+  STEP: 169
+  '+': 170
+  '-': 171
+  '*': 172
+  '/': 173
+  ↑: 174
+  AND: 175
+  OR: 176
+  '>': 177
+  '=': 178
+  '<': 179
+  SGN: 180
+  INT: 181
+  ABS: 182
+  USR: 183
+  FRE: 184
+  POS: 185
+  SQR: 186
+  RND: 187
+  LOG: 188
+  EXP: 189
+  COS: 190
+  SIN: 191
+  TAN: 192
+  ATN: 193
+  PEEK: 194
+  LEN: 195
+  STR$: 196
+  VAL: 197
+  ASC: 198
+  CHR$: 199
+  LEFT$: 200
+  RIGHT$: 201
+  MID$: 202
+  GO: 203
+special_chars:
+  # {cursor left}/{crsr left} alt + left
+  - mod: *AltModifier
+    key: *Key_Left
+    char: 57954
+    code: 157
+  # {cursor right}/{crsr right}  (alt+right)
+  - mod: *AltModifier
+    key: *Key_Right
+    char: 57949
+    code: 29
+  # {cursor up}/{crsr up} (alt+up)
+  - mod: *AltModifier
+    key: *Key_Up
+    char: 57969
+    code: 145
+  # {cursor down}/{crsr down} (alt+down)
+  - mod: *AltModifier
+    key: *Key_Down
+    char: 57937
+    code: 17
+  # {home} (backslash)
+  - mod: *NoModifier
+    key: *Key_Backslash
+    char: 57939
+    code: 19
+  # {clear} / {clr} (bar)
+  - mod: *ShiftModifier
+    key: *Key_Bar
+    char: 57971
+    code: 147
+  # {blk} / {black} ctrl+1
+  - mod: *CtrlModifier
+    key: *Key_1
+    char: 61136
+    code: 144
+  # {wht} / {white} ctrl+2
+  - mod: *CtrlModifier
+    key: *Key_2
+    char: 57925
+    code: 5
+  # {red}  ctrl+3
+  - mod: *CtrlModifier
+    key: *Key_3
+    char: 57948
+    code: 28
+  # {cyn} / {cyan}   ctrl+4
+  - mod: *CtrlModifier
+    key: *Key_4
+    char: 57983
+    code: 159
+  # {pur} / {purple}    ctrl+5
+  - mod: *CtrlModifier
+    key: *Key_5
+    char: 57980
+    code: 156
+  # {grn} / {green}     ctrl+6
+  - mod: *CtrlModifier
+    key: *Key_6
+    char: 57950
+    code: 30
+  # {blu} / {blue}      ctrl+7
+  - mod: *CtrlModifier
+    key: *Key_7
+    char: 57951
+    code: 31
+  # {yel} / {yellow}    ctrl+8
+  - mod: *CtrlModifier
+    key: *Key_8
+    char: 57982
+    code: 158
+  # {rvs on} ctrl+9
+  - mod: *CtrlModifier
+    key: *Key_9
+    char: 57938
+    code: 18
+  # {rvs off} ctrl+0
+  - mod: *CtrlModifier
+    key: *Key_0
+    char: 57970
+    code: 146
+  # {orange} alt+1
+  - mod: *AltModifier
+    key: *Key_1
+    char: 57953
+    code: 129
+  # {brown} alt+2
+  - mod: *AltModifier
+    key: *Key_2
+    char: 57973
+    code: 149
+  # {pink} / {light-red}  alt+3
+  - mod: *AltModifier
+    key: *Key_3
+    char: 57974
+    code: 150
+  # {grey1} / {darkgrey}   alt+4
+  - mod: *AltModifier
+    key: *Key_4
+    char: 57975
+    code: 151
+  # {grey}    alt+5
+  - mod: *AltModifier
+    key: *Key_5
+    char: 57976
+    code: 152
+  # {lightgreen}     alt+6
+  - mod: *AltModifier
+    key: *Key_6
+    char: 57977
+    code: 153
+  # {lightblue}     alt+7
+  - mod: *AltModifier
+    key: *Key_7
+    char: 57978
+    code: 154
+  # {grey3} / {lightgrey}     alt+8
+  - mod: *AltModifier
+    key: *Key_8
+    char: 57979
+    code: 155
+  # shift + letters
+  - mod: *ShiftModifier
+    key: *Key_A
+    char: 60993
+    code: 193
+  - mod: *ShiftModifier
+    key: *Key_B
+    char: 60994
+    code: 194
+  - mod: *ShiftModifier
+    key: *Key_C
+    char: 60995
+    code: 195
+  - mod: *ShiftModifier
+    key: *Key_D
+    char: 60996
+    code: 196
+  - mod: *ShiftModifier
+    key: *Key_E
+    char: 60997
+    code: 197
+  - mod: *ShiftModifier
+    key: *Key_F
+    char: 60998
+    code: 198
+  - mod: *ShiftModifier
+    key: *Key_G
+    char: 60999
+    code: 199
+  - mod: *ShiftModifier
+    key: *Key_H
+    char: 61000
+    code: 200
+  - mod: *ShiftModifier
+    key: *Key_I
+    char: 61001
+    code: 201
+  - mod: *ShiftModifier
+    key: *Key_J
+    char: 61002
+    code: 202
+  - mod: *ShiftModifier
+    key: *Key_K
+    char: 61003
+    code: 203
+  - mod: *ShiftModifier
+    key: *Key_L
+    char: 61004
+    code: 204
+  - mod: *ShiftModifier
+    key: *Key_M
+    char: 61005
+    code: 205
+  - mod: *ShiftModifier
+    key: *Key_N
+    char: 61006
+    code: 206
+  - mod: *ShiftModifier
+    key: *Key_O
+    char: 61007
+    code: 207
+  - mod: *ShiftModifier
+    key: *Key_P
+    char: 61008
+    code: 208
+  - mod: *ShiftModifier
+    key: *Key_Q
+    char: 61009
+    code: 209
+  - mod: *ShiftModifier
+    key: *Key_R
+    char: 61010
+    code: 210
+  - mod: *ShiftModifier
+    key: *Key_S
+    char: 61011
+    code: 211
+  - mod: *ShiftModifier
+    key: *Key_T
+    char: 61012
+    code: 212
+  - mod: *ShiftModifier
+    key: *Key_U
+    char: 61013
+    code: 213
+  - mod: *ShiftModifier
+    key: *Key_V
+    char: 61014
+    code: 214
+  - mod: *ShiftModifier
+    key: *Key_W
+    char: 61015
+    code: 215
+  - mod: *ShiftModifier
+    key: *Key_X
+    char: 61016
+    code: 216
+  - mod: *ShiftModifier
+    key: *Key_Y
+    char: 61017
+    code: 217
+verbatim_start_chars:
+  '"': '"'
+verbatim_start_tokens:
+  131: ':'    # DATA
+    

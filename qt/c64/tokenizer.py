@@ -25,6 +25,7 @@ class ITokenizer:
                 continue
             else:
                 if s[i] in self.verbatim_start_chars:
+                    print('ENTERING VERBA')
                     verbatim = True
                     verbatim_end_char = self.verbatim_start_chars[s[i]]
                     i += 1
@@ -92,50 +93,85 @@ class ITokenizer:
         if upperCase:
             for i in range(Qt.Key_A, Qt.Key_Z+1):
                 self.keys[(Qt.NoModifier.value, i)] = i
+        if 'verbatim_start_chars' in self.tokens:
+            for key, value in self.tokens['verbatim_start_chars'].items():
+                self.verbatim_start_chars[key] = value
+        if 'verbatim_start_tokens' in self.tokens:
+            for key, value in self.tokens['verbatim_start_tokens'].items():
+                self.verbatim_start_tokens[key] = value
 
 class SpeccyTokenizer(ITokenizer):
     def __init__(self, fileName, upperCase=False):
         super().__init__(fileName, upperCase)
 
-    def convertNumber(self, x):
+    # provides the  5-byte numeric format of a number given in str format
+    def convertNumber(self, x: str):
         n = bytearray()
         dot = x.find('.')
+        print('number is a: ', 'int' if dot == -1 else 'float')
         number = int(x) if dot == -1 else float(x)
-
-        sgn = 1 if x >= 0 else -1
+        dp = int(abs(number))
+        sgn = 1 if number >= 0 else -1
         # decimal part expressed in binary
-        decimal_part = bin(int(abs(number)))[2:]
+        decimal_part = bin(dp)[2:]
 
-        #print('decimal part:',decimal_part)
+        print('decimal part:',decimal_part)
         # if decimal part is non empty then
         exponent = 0
         # compute binary representation of fractional
-        a = []
+
+
+        a = [] if dp == 0 else [int(x) for x in list(decimal_part)]
+        # if we have a fractionary part. stop when we have 32 digits
+        index_of_first_one = 0 if dp > 0 else -1
+        point_index = len(a)
+        #print('a=',a)
         if dot != -1:
             fp = number % 1
-            for i in range(0,32):
+            k = 0
+            while len(a) < 33:
                 tmp = fp * 2
-                a.append(int(tmp))
+                # don't add leading zeros if we have no decimal part
+                cn = int(tmp)
+                #print(tmp,cn,index_of_first_one)
+                if index_of_first_one == -1:
+                    if cn == 1:
+                        index_of_first_one = k
+                        a.append(cn)
+                else:
+                    a.append(cn)
                 fp = tmp % 1
+                k += 1
                 if fp == 0:
                     break
-        mant=[]
-        if decimal_part[0] == '1':
-            exponent = 128 + len(decimal_part)
-            mant = [int(x) for x in decimal_part]
+            exponent = point_index - index_of_first_one
+            print(len(a))
+            #a += [0] * (max(0, 33-len(a)))
+            # apply carry
+            klol= int(''.join([str(x) for x in a[:32]]), 2)
+            mantissa = bin(klol+a[32])[2:]
+            print(mantissa)
+            # now mant is a 32 bit number
+            # first nbit of mantissa is always 1 - override with sign
+            mantissa = ('0' if sgn > 0 else '1') + mantissa[1:]
+            print('mantissa is ', mantissa)
+            n.append (128 + exponent)
+            for i in range(0, 4):
+                n.append(int(mantissa[8*i:8*i+8], 2))
+            return n
         else:
-            b = next(i for i,v in enumerate(l) if v==1)
-            exponent = 128 - b
-        print('exponent is ',exponent)
-        mant.extend(a)
-        mant = mant[:32] + [0] * (max(0, 32-len(mant)))
-        # now mant is a 32 bit number
-        n.append(exponent)
-        print('mantissa is ', mant)
-        
-        for i in range(0, 4):
-            n.append(int(''.join([str(x) for x in mant[8*i:8*i+8]]), 2))
-        return n
+            #  1 byte: always 0
+            n.append(0)
+            #  1 byte: 0 if the number is positive or -1 (0xFF) if the number is negative
+            n.append(0 if sgn == 1 else 0xFF)
+            #  2 bytes: little-endian unsigned integer from 0 to 65535.
+            #  Subtract 65536 from this if number is flagged as negative
+            nn = number if sgn == 1 else number - 65536
+            n += nn.to_bytes(2, 'little')
+            #  1 byte: always 0
+            n.append(0)
+
+            return n
 
             
 
@@ -147,6 +183,7 @@ class SpeccyTokenizer(ITokenizer):
         m = bytearray()
         #m += address.to_bytes(2, 'little')
         i = 0
+        total_length = 0
         while i < len(lines):
             cl = lines[i]
             i += 1
@@ -158,9 +195,20 @@ class SpeccyTokenizer(ITokenizer):
             ln = int(cl[:lc])
             print(' -- parse line #',ln)
             inst = self.tokenize(cl[lc:])
-            print([hex(int(x)) for x in inst])
+            linst = len(inst)
+            instruction = bytearray()
+            instruction += ln.to_bytes(2, 'big')
+            instruction += linst.to_bytes(2, 'little')
+            instruction += inst
+            instructions[ln] = instruction
+            total_length += len(instruction)
+        sorted_instructions = sorted(instructions)  # [x[1] for x in sorted(instructions.items())]
+        print('total length:',hex(total_length))
+        #with open(file, 'wb') as f:
+        #    for s in sorted_instructions:
+        #        f.write(instructions[s])
 
-        exit(1)
+
 
     def tokenize(self, statement: str):
         i = 0
@@ -169,31 +217,31 @@ class SpeccyTokenizer(ITokenizer):
         verbatim = False
         verbatim_end_char = None
         s = statement.strip()
-        # preprocess string - remove spaces outside verbatim
 
+        instruction = bytearray()
 
-
-
-
+        current_number = []
         while i < len(s):
             # handle verbatim (e.g. DATA or quotes)
             if verbatim:
                 verbatim &= (s[i] != verbatim_end_char)
+                instruction.append(s[i])
                 i += 1
                 continue
             else:
                 if s[i] in self.verbatim_start_chars:
                     verbatim = True
                     verbatim_end_char = self.verbatim_start_chars[s[i]]
+                    instruction.append(s[i])
                     i += 1
                     continue
-            if s[i].isspace():
-                i += 1
-                continue
             start = i
             token = -1
             node = self.tokenRoot
             while i < len(s):
+                if s[i].isspace():
+                    i += 1
+                    continue
                 cc = s[i].upper()
                 if cc not in node.children:
                     break
@@ -201,45 +249,29 @@ class SpeccyTokenizer(ITokenizer):
                 token = node.token
                 i += 1
             if token != -1:
-                tokens.append((start, i - start, token))
+                instruction.append(token)
+                #tokens.append((start, i - start, token))
                 if token in self.verbatim_start_tokens:
                     verbatim = True
                     self.verbatim_end_char = self.verbatim_start_tokens[token]
             else:
+                if not current_number and s[i].isdigit():
+                    current_number = [s[i]]
+                elif current_number:
+                    if s[i].isdigit() or s[i] == '.':
+                        current_number.append(s[i])
+                    else:
+                        instruction.append(0x0E)
+                        instruction += self.convertNumber(''.join(current_number))
+                        current_number = None
+                instruction.append(self.charToCode.get(ord(s[i]), ord(s[i])))
+                #instruction.append(s[i])
                 i = start + 1
             #    i += 1
-        i = 0
-        instruction = bytearray()
-        token_inserted = False
-        start_number = -1
-        while i < len(s):
-            if tokens and tokens[0][0] == i:
-                instruction.append(tokens[0][2])
-                print('FOUND TOKEN: ', tokens[0][2])
-                i += tokens[0][1]
-                tokens.pop(0)
-                token_inserted = True
-            else:
-                #print('PROVA',s[i], ord(s[i]))
-                if s[i].isspace() and token_inserted:
-                    pass
-                else:
-                    if start_number == -1:
-                        # check if we have a new number
-                        if s[i].isdigit() or s[i] == '.':
-                            start_number = i
-                    else:
-                        if not (s[i].isdigit() or s[i] == '.'):
-                            start_number = -1
-                            print('NUMBER FROM',start_number,'to',i)
-                    instruction.append(self.charToCode.get(ord(s[i]), ord(s[i])))
-                    token_inserted = False
-                i += 1
-        if start_number != -1:
-            print('NUMBER FROM',start_number,'to',i)
-            nr = self.convertNumber(s[start_number:i])
-            print('number:', [hex(int(x)) for x in nr])
-
+        if current_number != -1:
+            instruction.append(0x0E)
+            instruction += self.convertNumber(''.join(current_number))
+        instruction.append(0x0D)
         return instruction
 
 

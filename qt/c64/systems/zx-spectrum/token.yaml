@@ -48,5 +48,6 @@ variables:
 
 tokens: # these are the BASIC v2.0 76 tokens
   LET: 0xF1
+  CLEAR: 0xFD
 
 special_chars: []

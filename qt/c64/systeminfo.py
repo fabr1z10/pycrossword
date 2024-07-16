@@ -1,7 +1,8 @@
 import yaml
 from PySide6.QtGui import QFont, QFontDatabase
 from pathlib import Path
-from tokenizer import Tokenizer, C64Tokenizer, SpeccyTokenizer
+from speccy_tokenizer import SpeccyTokenizer
+from c64_tokenizer import  C64Tokenizer
 
 class SystemInfo:
     def __init__(self, fontDirectory):

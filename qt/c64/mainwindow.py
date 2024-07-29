@@ -143,7 +143,7 @@ class MainWindow(QMainWindow):
             print("User chose ok")
 
     def openFile(self):
-        path = QFileDialog.getOpenFileName(self, "Open file", "", "Prg files (*.prg)")
+        path = QFileDialog.getOpenFileName(self, "Open file", "/home/fabrizio/oldprogs", "Prg files (*.prg);;tap (*.tap);;All files (*.*)")
         if not path:
             return
         else:

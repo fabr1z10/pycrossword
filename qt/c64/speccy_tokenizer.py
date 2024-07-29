@@ -7,6 +7,7 @@ class SpeccyTokenizer(ITokenizer):
 
     # provides the  5-byte numeric format of a number given in str format
     def convertNumber(self, x: str):
+        print('converting',x)
         n = bytearray()
         dot = x.find('.')
         print('number is a: ', 'int' if dot == -1 else 'float')
@@ -46,8 +47,8 @@ class SpeccyTokenizer(ITokenizer):
                 if fp == 0:
                     break
             exponent = point_index - index_of_first_one
-            print(len(a))
-            #a += [0] * (max(0, 33-len(a)))
+            print(len(a),a)
+            a += [0] * (max(0, 33-len(a)))
             # apply carry
             klol= int(''.join([str(x) for x in a[:32]]), 2)
             mantissa = bin(klol+a[32])[2:]
@@ -211,24 +212,25 @@ class SpeccyTokenizer(ITokenizer):
             # handle verbatim (e.g. DATA or quotes)
             if verbatim:
                 verbatim &= (s[i] != verbatim_end_char)
-                instruction.append(s[i])
+                instruction.append(self.charToCode.get(ord(s[i]), ord(s[i])))
                 i += 1
                 continue
             else:
                 if s[i] in self.verbatim_start_chars:
                     verbatim = True
                     verbatim_end_char = self.verbatim_start_chars[s[i]]
-                    instruction.append(s[i])
+                    instruction.append(self.charToCode.get(ord(s[i]), ord(s[i])))
                     i += 1
                     continue
             start = i
             token = -1
             node = self.tokenRoot
             while i < len(s):
-                if s[i].isspace():
-                    i += 1
-                    continue
+                #if s[i].isspace():
+                #    i += 1
+                #    continue
                 cc = s[i].upper()
+                print('try',cc)
                 if cc not in node.children:
                     break
                 node = node.children[cc]
@@ -241,20 +243,23 @@ class SpeccyTokenizer(ITokenizer):
                     verbatim = True
                     self.verbatim_end_char = self.verbatim_start_tokens[token]
             else:
-                if not current_number and s[i].isdigit():
-                    current_number = [s[i]]
+                print('token not found starting @ ',start, s[start])
+                if not current_number and s[start].isdigit():
+                    print('start number @ ', s[start])
+                    current_number = [s[start]]
                 elif current_number:
-                    if s[i].isdigit() or s[i] == '.':
-                        current_number.append(s[i])
+                    if s[start].isdigit() or s[start] == '.':
+                        current_number.append(s[start])
                     else:
                         instruction.append(0x0E)
                         instruction += self.convertNumber(''.join(current_number))
                         current_number = None
-                instruction.append(self.charToCode.get(ord(s[i]), ord(s[i])))
-                #instruction.append(s[i])
+                # don't append space
+                if not s[start].isspace():
+                    instruction.append(self.charToCode.get(ord(s[start]), ord(s[start])))
                 i = start + 1
             #    i += 1
-        if current_number != -1:
+        if current_number:
             instruction.append(0x0E)
             instruction += self.convertNumber(''.join(current_number))
         instruction.append(0x0D)

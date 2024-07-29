@@ -1,22 +1,32 @@
 #!/usr/bin/python3
 
-from tokenizer import SpeccyTokenizer
+from speccy_tokenizer import SpeccyTokenizer
 
 
 def zx_number(t: SpeccyTokenizer, s: str, result):
     a = t.convertNumber(s)
     b = ["{:02x}".format(x) for x in a]
-    print('number:', s, ' --> ', b, a == bytearray(result))
+    print('number:', s, ' --> ', b, 'OK' if a == bytearray(result) else 'FAIL')
     
+def zx_instruction(t: SpeccyTokenizer, s: str, result):
+    a=t.tokenize(s)
+    b = ["{:02x}".format(x) for x in a]
+    print('inst:', s, ' --> ', b, 'OK' if (a == bytearray(result)) else 'FAIL')
+
 
 
 def test1():
     s = SpeccyTokenizer('systems/zx-spectrum/token.yaml')
+    zx_number(s, '1.25', [0x81, 0x20, 0x00, 0x00, 0x00])
+
     # zx_number(s, '1.5', [0x81, 0x40, 0x00, 0x00, 0x00])
     # zx_number(s, '0.5', [0x80, 0x00, 0x00, 0x00, 0x00])
     # zx_number(s, '42', [0x00, 0x00, 0x2a, 0x00, 0x00])
     # zx_number(s, '1024', [0x00, 0x00, 0x00, 0x04, 0x00])
     zx_number(s, '0.3', [0x7f, 0x19, 0x99, 0x99, 0x9a])
     zx_number(s, '0.0001', [0x73, 0x51, 0xb7, 0x17, 0x59])
+    zx_instruction(s, 'PRINT AT 11,16;"*"', [0xF5, 0xAC, 0x31, 0x31, 0x0E, 0x00, 0x00, 0x0B, 0x00, 0x00, 0x2C, 0x31, 0x36, 0x0E, 0x00, 0x00,
+        0x10, 0x00, 0x00, 0x3B, 0x22, 0x2A, 0x22, 0x0D])
+
 
 test1()
